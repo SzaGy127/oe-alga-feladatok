@@ -6,4 +6,3 @@ namespace OE.ALGA.Paradigmak
 {
     // 1. heti labor feladat - Tesztek: 01_ImperativParadigmaTesztek.cs
 }
-
