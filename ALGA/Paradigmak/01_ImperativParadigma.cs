@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OE.ALGA.Paradigmak
 {
+    // --- interface-ek ---
+
     public interface IVegrehajthato
     {
-        void Vegrehajtas()
-        { }
+        public void Vegrehajtas() { }
     }
 
     public interface IFuggo
@@ -19,67 +16,17 @@ namespace OE.ALGA.Paradigmak
         public bool FuggosegTeljesul { get; }
     }
 
-    public class FuggoFeladatTarolo<T> : FeladatTarolo<T> where T : IVegrehajthato, IFuggo
+    // --- osztályok ---
+
+    public class FeladatTarolo<T> : IEnumerable<T> where T: IVegrehajthato
     {
-        public FuggoFeladatTarolo(int size) : base(size)
-        {
-        }
-
-        public override void MindentVegrehajt()
-        {
-            foreach(T elem in this)
-            {
-                if (elem.FuggosegTeljesul)
-                {
-                    elem.Vegrehajtas();
-                }
-            }
-        }
-    }
-
-    public class FeladatTaroloBejaro<T> : IEnumerator<T>
-    {
-        protected int n = 0;
-        protected T[] tarolo;
-
-        public FeladatTaroloBejaro(T[] tarolo, int n)
-        {
-            this.tarolo = tarolo;
-            this.n = n;
-        }
-
-        public T Current => tarolo[n];
-
-        object IEnumerator.Current => Current;
-
-        public void Dispose()
-        {
-        }
-
-        public bool MoveNext()
-        {
-            if (n + 1 <= tarolo.Length)
-            {
-                n++;
-                return true;
-            }
-            return false;
-        }
-
-        public void Reset()
-        {
-            n = 0;
-        }
-    }
-
-    public class FeladatTarolo<T> : IEnumerable<T> where T : IVegrehajthato
-    {
-        T[] tarolo;
-        int n = 0;
+        public T[] tarolo;
+        public int n;
 
         public FeladatTarolo(int size)
         {
-            this.tarolo = new T[size];
+            tarolo = new T[size];
+            n = 0;
         }
 
         public void Felvesz(T elem)
@@ -97,7 +44,7 @@ namespace OE.ALGA.Paradigmak
 
         public virtual void MindentVegrehajt()
         {
-            for (int i = 0; i < tarolo.Length; i++)
+            for(int i = 0; i < n; i++)
             {
                 tarolo[i].Vegrehajtas();
             }
@@ -114,30 +61,69 @@ namespace OE.ALGA.Paradigmak
         }
     }
 
-    [Serializable]
-    public class TaroloMegteltKivetel : Exception
+    public class FuggoFeladatTarolo<T> : FeladatTarolo<T> where T : IVegrehajthato, IFuggo
     {
-        public TaroloMegteltKivetel()
+        public FuggoFeladatTarolo(int size) : base(size)
         {
         }
 
-        public TaroloMegteltKivetel(string message) : base(message)
+        public override void MindentVegrehajt()
         {
-        }
-
-        public TaroloMegteltKivetel(string message, Exception innerException) : base(message, innerException)
-        {
-        }
-
-        protected TaroloMegteltKivetel(SerializationInfo info, StreamingContext context) : base(info, context)
-        {
+            if (n>0)
+            {
+                for (int i = 0; i < n; i++)
+                {
+                    if (tarolo[i].FuggosegTeljesul)
+                    {
+                        tarolo[i].Vegrehajtas();
+                    }
+                }
+            }
         }
     }
 
-    public class Program
+    // --- bejárók/bejárhatók ---
+
+    public class FeladatTaroloBejaro<T> : IEnumerator<T>
     {
-        static void Main(string[] args)
+        protected T[] tarolo;
+        protected int pointer = -1;
+        protected int size;
+
+        public FeladatTaroloBejaro(T[] tarolo, int size)
+        {
+            this.tarolo = tarolo;
+            this.size = size;
+        }
+
+        public T Current => tarolo[pointer];
+
+        object IEnumerator.Current => Current;
+
+        public void Dispose()
         {
         }
+
+        public bool MoveNext()
+        {
+            if (pointer < size-1)
+            {
+                pointer++;
+                return true;
+            }
+            return false;
+        }
+
+        public void Reset()
+        {
+            pointer = -1;
+        }
+    }
+
+    // --- kivételek ---
+
+    [Serializable]
+    public class TaroloMegteltKivetel : Exception
+    {
     }
 }
