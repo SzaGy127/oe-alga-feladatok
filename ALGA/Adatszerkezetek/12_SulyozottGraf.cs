@@ -1,4 +1,4 @@
-using OE.ALGA.Adatszerkezetek.OE.ALGA.Adatszerkezetek;
+using OE.ALGA.Adatszerkezetek;
 using System;
 
 namespace OE.ALGA.Adatszerkezetek
